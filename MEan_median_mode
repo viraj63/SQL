@@ -1,0 +1,10 @@
+with cte as (SELECT *, ROW_NUMBER() OVER(ORDER BY email_count) rn, (SELECT COUNT(*) FROM inbox_stats) n FROM inbox_stats)
+
+select sum(email_count)/count(email_count) as mean,
+(select round(avg(email_count)) from(select email_count from cte where rn=((n+1)/2)  or rn=((n+2)/2)  ) as T) as median,(select email_count
+from inbox_stats
+GROUP BY email_count
+order by count(email_count) DESC
+limit 1) as mode
+
+from cte
