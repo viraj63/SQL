@@ -1,0 +1,7 @@
+with cte as(select e.empId,e.name,e.salary,b.bonus
+from employee as e
+left join bonus b on b.empId=e.empId)
+
+select name,bonus
+from cte
+where bonus is Null or bonus<1000
