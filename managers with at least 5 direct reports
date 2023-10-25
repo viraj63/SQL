@@ -1,0 +1,8 @@
+with cte as (select e1.id,e1.name from employee as e1
+inner join employee e on e1.id=e.managerId),
+cte2 as(select id,name,count(name) as p
+from cte 
+group by name,id)
+
+select name from cte2
+where p>4
