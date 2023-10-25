@@ -1,0 +1,3 @@
+select w.id from weather as w
+inner join weather w1 on (w.recordDate) =(w1.recordDate) + INTERVAL 1 DAY
+where w.temperature > w1.temperature
