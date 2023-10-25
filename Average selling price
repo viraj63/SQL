@@ -1,0 +1,35 @@
+(select p.product_id,IFNULL(round(sum(u.units*p.price)/sum(u.units),2),0) as average_price
+from prices as p
+left join unitssold as u on p.product_id=u.product_id
+and u.purchase_date  between p.start_date and p.end_date
+group by p.product_id )
+
+
+------------------
+
+The two SQL queries you provided are similar, but they differ in how they handle the date filtering conditions when joining the `prices` and `unitssold` tables. Specifically, they differ in the placement of the date filtering condition in the `ON` clause of the `LEFT JOIN`. Here's a breakdown of the differences:
+
+1. **First Query**:
+
+   ```sql
+   (select p.product_id, IFNULL(round(sum(u.units * p.price) / sum(u.units), 2), 0) as average_price
+   from prices as p
+   left join unitssold as u on p.product_id = u.product_id
+   where u.purchase_date between p.start_date and p.end_date
+   group by p.product_id)
+   ```
+
+   In this query, the date filtering condition `u.purchase_date between p.start_date and p.end_date` is placed in the `WHERE` clause. This means that you are filtering the rows after the tables have been joined. The `LEFT JOIN` includes all rows from the `prices` table and matching rows from the `unitssold` table based on the `product_id` condition. Rows that do not match will have `NULL` values in the `unitssold` columns. After the join, the date filtering is applied to exclude rows that do not meet the date criteria.
+
+2. **Second Query**:
+
+   ```sql
+   (select p.product_id, IFNULL(round(sum(u.units * p.price) / sum(u.units), 2), 0) as average_price
+   from prices as p
+   left join unitssold as u on p.product_id = u.product_id and u.purchase_date between p.start_date and p.end_date
+   group by p.product_id)
+   ```
+
+   In this query, the date filtering condition `u.purchase_date between p.start_date and p.end_date` is placed in the `ON` clause of the `LEFT JOIN`. This means that the filtering is applied as part of the join condition itself. The `LEFT JOIN` still includes all rows from the `prices` table, but it also includes only the rows from the `unitssold` table that meet both the `product_id` and the date criteria. Rows that do not match either condition will have `NULL` values in the `unitssold` columns.
+
+The key difference is in when the date filtering is applied. In the first query, it is applied after the join, whereas in the second query, it is applied as part of the join condition. Depending on your specific data and requirements, one approach may be more suitable than the other. The second query's approach can potentially reduce the number of rows included in the result set, as it filters rows before the join, while the first query filters rows after the join.
