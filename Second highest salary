@@ -1,0 +1,6 @@
+
+
+select (case when t=2 then salary else NULL end ) as SecondHighestSalary
+from (select *,dense_rank() over (order by salary desc ) as t from employee ) cte
+order by SecondHighestSalary desc 
+limit 1
