@@ -1,0 +1,28 @@
+ with cte as(select m.user_id,count(m.rating) as ct,u.name
+from MovieRating as m
+left join users u on m.user_id=u.user_id
+group by m.user_id
+order by ct desc,u.name asc
+limit 1)
+,
+cte2 as (select r.movie_id,avg(r.rating) as avg,date_format(r.created_at,'%Y-%m') as date,m.title
+from MovieRating as r
+left join movies m on m.movie_id=r.movie_id
+group by r.movie_id,date
+order by avg)
+
+
+
+,
+cte4 as(select title as results
+from cte2
+where date ='2020-02'
+order by avg desc, title asc
+limit 1)
+
+select results
+from cte4
+
+union all
+select name as results
+from cte
