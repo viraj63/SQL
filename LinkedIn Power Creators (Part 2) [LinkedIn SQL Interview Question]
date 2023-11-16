@@ -1,0 +1,80 @@
+with cte as (
+select e.personal_profile_id,e.company_id,p.followers as profile_follower , c.followers as company_follower
+from employee_company as e  
+left join personal_profiles p on p.profile_id=e.personal_profile_id
+LEFT JOIN company_pages c on c.company_id=e.company_id)
+
+,cte2 as 
+(select personal_profile_id,company_id,profile_follower,company_follower,
+rank() over(PARTITION BY personal_profile_id order by company_follower DESC) as num 
+from cte)
+
+,cte3 as(select  personal_profile_id,company_id,profile_follower,company_follower
+from cte2 
+where num=1)
+
+
+select personal_profile_id as profile_id
+from cte3
+where profile_follower>company_follower
+
+-------------------------
+The LinkedIn Creator team is looking for power creators who use their personal profile as a company or influencer page. This means that if someone's Linkedin page has more followers than all the company they work for, we can safely assume that person is a Power Creator. Keep in mind that if a person works at multiple companies, we should take into account the company with the most followers.
+
+Write a query to return the IDs of these LinkedIn power creators in ascending order.
+
+Assumptions:
+
+A person can work at multiple companies.
+In the case of multiple companies, use the one with largest follower base.
+This is the second part of the question, so make sure your start with Part 1 if you haven't completed that yet!
+
+personal_profiles Table:
+Column Name	Type
+profile_id	integer
+name	string
+followers	integer
+personal_profiles Example Input:
+profile_id	name	followers
+1	Nick Singh	92,000
+2	Zach Wilson	199,000
+3	Daliana Liu	171,000
+4	Ravit Jain	107,000
+5	Vin Vashishta	139,000
+6	Susan Wojcicki	39,000
+employee_company Table:
+Column Name	Type
+personal_profile_id	integer
+company_id	integer
+employee_company Example Input:
+personal_profile_id	company_id
+1	4
+1	9
+2	2
+3	1
+4	3
+5	6
+6	5
+company_pages Table:
+Column Name	Type
+company_id	integer
+name	string
+followers	integer
+company_pages Example Input:
+company_id	name	followers
+1	The Data Science Podcast	8,000
+2	Airbnb	700,000
+3	The Ravit Show	6,000
+4	DataLemur	200
+5	YouTube	1,6000,000
+6	DataScience.Vin	4,500
+9	Ace The Data Science Interview	4479
+Example Output:
+profile_id
+1
+3
+4
+5
+This output shows that profile IDs 1-5 are all power creators, meaning that they have more followers than their each of their company pages, whether they work for 1 company or 3.
+
+The dataset you are querying against may have different input & output - this is just an example!
