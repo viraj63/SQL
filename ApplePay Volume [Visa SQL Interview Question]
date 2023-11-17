@@ -1,0 +1,12 @@
+select merchant_id,sum(case when lower(payment_method) like  'app%' then  (transaction_amount) ELSE 0 end) as total_transaction
+
+from transactions 
+group by merchant_id
+order by total_transaction DESC
+
+--------------
+select merchant_id,sum(case when lower(payment_method) like  'app%' then  (transaction_amount) ELSE 0 end) as total_transaction
+
+from transactions 
+group by merchant_id
+order by total_transaction DESC
