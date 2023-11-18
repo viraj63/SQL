@@ -1,0 +1,21 @@
+with cte as (select datacenter_id,sum(monthly_demand) as used
+from forecasted_demand
+group by datacenter_id)
+,
+cte3 as (select d.datacenter_id,c.used,d.monthly_capacity as capa
+from datacenters as d  
+left join cte as c on d.datacenter_id=c.datacenter_id)
+
+select datacenter_id,(capa - used)  as spare_capacity
+from cte3
+order by datacenter_id
+-------------
+Microsoft Azure's capacity planning team wants to understand how much data its customers are using, and how much spare capacity is left in each of its data centers. You’re given three tables: customers, data centers, and forecasted_demand.
+
+Write a query to find each data centre’s total unused server capacity. Output the data center id in ascending order and the total spare capacity.
+
+Definitions:
+
+monthly_capacity is the total monthly server capacity for each centers.
+monthly_demand is the server demand for each customer.
+P.S. If you've read the Ace the Data Science Interview and liked it, consider writing us a review?
