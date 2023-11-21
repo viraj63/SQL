@@ -1,0 +1,19 @@
+select COUNT(business_id) AS business_count,round(100* count(business_id) / 
+(select count(business_id) from reviews) ,0) as top_rated_pct
+
+
+
+from reviews
+where review_stars ='4'  or review_stars='5'
+
+--------------------
+This is the same question as problem #27 in the SQL Chapter of Ace the Data Science Interview!
+
+Assume you are given the table below containing information on user reviews. Write a query to obtain the number and percentage of businesses that are top rated. A top-rated busines is defined as one whose reviews contain only 4 or 5 stars.
+
+Output the number of businesses and percentage of top rated businesses rounded to the nearest integer.
+
+Assumption:
+
+Each business has only one review (which is the business' average rating).
+P.S. It's an Easy question, so keep your solution simple and short! 😉
