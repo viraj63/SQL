@@ -1,0 +1,53 @@
+WITH cte1 AS (
+    SELECT user_id, email AS personal
+    FROM users
+    WHERE email_type = 'personal'
+),
+cte2 AS (
+    SELECT user_id, email AS business
+    FROM users
+    WHERE email_type = 'business'
+),
+cte3 AS (
+    SELECT user_id, email AS recovery
+    FROM users
+    WHERE email_type = 'recovery'
+)
+
+SELECT COALESCE(t1.user_id, t2.user_id, t3.user_id) AS user_id,
+       t1.personal,
+       t2.business,
+       t3.recovery
+FROM cte1 t1
+FULL OUTER JOIN cte2 t2 ON t1.user_id = t2.user_id
+FULL OUTER JOIN cte3 t3 ON t1.user_id = t3.user_id
+ORDER BY user_id;
+
+
+--------------------
+Each Facebook user can designate a personal email address, a business email address, and a recovery email address.
+
+Unfortunately, the table is currently in the wrong format, so you need to transform its structure to show the following columns (see example output): user id, personal email, business email, and recovery email. Sort your answer by user id in ascending order.
+
+users Table:
+Column Name	Type
+user_id	integer
+email_type	varchar
+email	varchar
+users Example Input:
+user_id	email_type	email
+123	personal	hello@nicksingh.com
+123	business	nick@datalemur.com
+123	recovery	ns2se@virginia.edu
+234	personal	aubrey1986@gmail.com
+234	business	mgmt@ovo.com
+Example Output:
+user_id	personal	business	recovery
+123	hello@nicksingh.com	nick@datalemur.com	ns2se@virginia.edu
+234	aubrey1986@gmail.com	mgmt@ovo.com	
+Explanation
+This task is basically just asking you to pivot/transform the shape of the data. It's all the same data as the input above, just in different format.
+
+Each row will represent a single user with all three of their emails listed. The first row shows User ID 123 (who may or may not be Nick Singh); their personal email is hello@nicksingh.com, their business email is nick@datalemur.com, and so on.
+
+The dataset you are querying against may have different input & output - this is just an example!
