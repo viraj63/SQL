@@ -1,0 +1,36 @@
+with cte as(select employee_id,sum(deal_size) as tot_deal
+from deals
+group by employee_id
+order by employee_id)
+
+
+select e.employee_id,(
+case when c.tot_deal<= e.quota then 
+(e.base + e.commission*c.tot_deal)
+else 
+(e.base + e.commission*e.quota + 
+e.commission*(c.tot_deal - e.quota)*e.accelerator) end) 
+
+as total_compensation
+
+from employee_contract as e
+left join cte c on c.employee_id=e.employee_id
+ORDER BY total_compensation DESC
+
+
+------------------
+
+As the Sales Operations Analyst at Oracle, you have been tasked with assisting the VP of Sales in determining the final compensation earned by each salesperson for the year. The compensation structure includes a fixed base salary, a commission based on total deals, and potential accelerators for exceeding their quota.
+
+Each salesperson earns a fixed base salary and a percentage of commission on their total deals. Also, if they beat their quota, any sales after that receive an accelerator, which is just a higher commission rate applied to their commissions after they hit the quota.
+
+Write a query that calculates the total compensation earned by each salesperson. The output should include the employee ID and their corresponding total compensation, sorted in descending order. In the case of ties, the employee IDs should be sorted in ascending order.
+
+Assumptions:
+
+A salesperson is considered to have hit their target (quota) if their total deals meet or exceed the assigned quota.
+If a salesperson does not meet the target, their compensation package consists of the fixed base salary and a commission based on the total deals.
+If a salesperson meets the target, their compensation package includes
+The fixed base salary,
+A commission on target (quota), and
+An additional commission, including any accelerator on the remaining balance of the total deals (total deals - quota). The accelerator represents a higher commission rate for sales made beyond the quota.
