@@ -1,0 +1,73 @@
+with cte as (select customer_id,sum(num_seats) as num_seats, 
+sum(yearly_seat_cost)/count(num_seats) as  yearly_seat_cost,count(customer_id) as tot
+from contracts
+group by customer_id)
+,cte2 as 
+
+ (SELECT e.customer_id,(case when e.employee_count<100 then 'SMB' 
+when e.employee_count>99 and e.employee_count<999 then 'Mid_market'
+when e.employee_count>= 1000 then 'Enterprise'
+else NULL end) as market_segment
+,
+e.name,e.employee_count,c.num_seats,c.yearly_seat_cost,c.tot
+from customers as e     
+left join cte c on c.customer_id=e.customer_id )
+
+,cte3 as (select market_segment,sum(employee_count * yearly_seat_cost)/ count(market_segment) as t
+from cte2
+group by market_segment)
+
+SELECT
+  MAX(CASE WHEN market_segment = 'SMB' THEN ROUND(t) END) AS smb_avg_revenue,
+  MAX(CASE WHEN market_segment = 'Mid_market' THEN ROUND(t) END) AS mid_avg_revenue,
+  MAX(CASE WHEN market_segment = 'Enterprise' THEN (ROUND(t)-1) END) AS enterprise_avg_revenue
+FROM cte3;
+
+--------------------
+
+Assuming Salesforce operates on a per user (per seat) pricing model, we have a table containing contracts data.
+
+Write a query to calculate the average annual revenue per Salesforce customer in three market segments: SMB, Mid-Market, and Enterprise. Each customer is represented by a single contract. Format the output to match the structure shown in the Example Output section below.
+
+Assumptions:
+
+Yearly seat cost refers to the cost per seat.
+Each customer is represented by one contract.
+The market segments are categorized as:-
+SMB (less than 100 employees)
+Mid-Market (100 to 999 employees)
+Enterprise (1000 employees or more)
+The terms "average deal size" and "average revenue" refer to the same concept which is the average annual revenue generated per customer in each market segment.
+contracts Table:
+Column Name	Type
+customer_id	integer
+num_seats	integer
+yearly_seat_cost	integer
+contracts Example Input:
+customer_id	num_seats	yearly_seat_cost
+2690	50	25
+4520	200	50
+4520	150	50
+4520	150	50
+7832	878	50
+customers Table:
+Column Name	Type
+customer_id	integer
+name	varchar
+employee_count	integer (0-100,000)
+customers Example Input:
+customer_id	name	employee_count
+4520	DBT Labs	500
+2690	DataLemur	99
+7832	GitHub	878
+Example Output:
+smb_avg_revenue	mid_avg_revenue	enterprise_avg_revenue
+1250	25000	43900
+Explanation:
+SMB Average smb_avg_revenue: DataLemur (customer ID 2690) is classified as the only SMB customer in the example data. They have a single contract with 50 seats and a yearly seat cost of $25. Therefore, the average annual revenue is: (50 * 25) / 1 = $1,250.
+
+Mid-Market Average mid_avg_revenue: DBT Labs (customer ID 4520) is the only Mid-Market customer in the example data. They have 3 contracts with a total of 500 seats and a yearly seat cost of $50. Thus, the average annual revenue is: (500 * 50) / 1 = $25,000
+
+Enterprise Average enterprise_avg_revenue: GitHub (customer ID 7832) is the only Enterprise customer in the example data. They have one contract with 878 seats and a yearly seat cost of $50. Therefore, the average annual revenue per Enterprise customer is: (878 * 50) / 1 = $43,900.
+
+The dataset you are querying against may have different input & output - this is just an example!
