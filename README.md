@@ -1,5 +1,5 @@
-Classification_-_Regression_Method
-Learning Classification models without using In-built models
+## Classification_-_Regression_Method
+### Learning Classification models without using In-built models
 
 So this assignment is focused on learning how to build classification and regression models from scratch. In the first part of this assignment,
 I will implement the logistic regression and test it on a penguin data set. In the second part, I will recommend the linear regression using OLS which is ordinary least square and in the third part 
